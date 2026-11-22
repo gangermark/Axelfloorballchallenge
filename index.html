@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sikta och skjut i Axels Innebandy Challenge.">
+  <title>Axels Innebandy Challenge</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="game.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Axels Innebandy <em>Challenge</em></h1>
+      <div class="score" id="scoreboard" hidden><span id="score-label">Poäng av 8</span><strong id="score">0</strong></div>
+    </header>
+    <section id="start-screen" aria-labelledby="start-heading">
+      <h2 id="start-heading" tabindex="-1">Tre nivåer på två avstånd</h2>
+      <p>Spela tre nivåer från det första avståndet. Sedan flyttas bollen längre bak och målet blir mindre. Du har upp till fem skott per nivå. När du når poängkravet går du vidare direkt.</p>
+      <button id="start" type="button">Spela</button>
+    </section>
+    <section id="play-screen" aria-label="Spelplan" hidden>
+      <div class="round">
+        <div><span id="distance">Avstånd 1 av 2</span> <strong id="level">Nivå 1</strong> <span id="challenge"></span></div>
+        <span id="shots">5 skott kvar</span>
+      </div>
+      <div id="rink" class="rink">
+        <div class="stands"></div>
+        <div class="boards"></div>
+        <div class="floor"></div>
+        <div class="crease" aria-hidden="true">
+          <div class="marking goal-area"></div>
+          <div class="marking goalkeeper-area"></div>
+        </div>
+        <div class="floor-line"></div>
+        <div id="goal" class="goal" aria-label="Mål med fem poängzoner">
+          <span class="zone upper left">5</span>
+          <span class="zone upper right">5</span>
+          <span class="zone lower left">3</span>
+          <span class="zone lower right">3</span>
+          <span class="zone middle">1</span>
+          <div id="keeper" class="keeper" aria-label="Målvakt" hidden>
+            <span class="keeper-leg keeper-leg-left"></span>
+            <span class="keeper-leg keeper-leg-right"></span>
+            <span class="keeper-arm keeper-arm-left"></span>
+            <span class="keeper-arm keeper-arm-right"></span>
+            <span class="keeper-glove keeper-glove-left"></span>
+            <span class="keeper-glove keeper-glove-right"></span>
+            <span class="keeper-body"></span>
+            <span class="keeper-mask"></span>
+          </div>
+        </div>
+        <div id="marker" class="marker" hidden></div>
+        <div class="spot"></div>
+        <div class="power">
+          <label for="power">Kraft</label>
+          <span id="power-value" aria-hidden="true">0 %</span>
+          <meter id="power" min="0" max="100" value="0"></meter>
+        </div>
+        <button id="ball" class="ball" type="button" aria-label="Innebandyboll" aria-describedby="controls">
+          <span class="holes"></span>
+        </button>
+        <p id="result" class="result" role="status"></p>
+      </div>
+      <button id="advance" type="button" hidden></button>
+      <footer>
+        <p id="controls">Dra bollen bakåt och släpp. Dra snett för att sikta och längre för mer kraft. Med tangentbordet siktar du med piltangenterna och skjuter med Enter.</p>
+        <div class="game-actions">
+          <button id="home" type="button">Startsida</button>
+          <button id="reset" type="button">Börja om</button>
+        </div>
+      </footer>
+    </section>
+  </main>
+</body>
+</html>
