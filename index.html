@@ -21,12 +21,19 @@
     <section id="start-screen" aria-labelledby="start-heading">
       <h2 id="start-heading" tabindex="-1">Tre nivåer på två avstånd</h2>
       <p>Spela tre nivåer från det första avståndet. Sedan flyttas bollen längre bak och målet blir mindre. Du har upp till fem skott per nivå. När du når poängkravet går du vidare direkt.</p>
-      <button id="start" type="button">Spela</button>
+      <div class="start-actions">
+        <button id="start" type="button">Spela</button>
+        <button id="start-timed" type="button" aria-describedby="timed-rules">Tidsutmaning</button>
+      </div>
+      <p id="timed-rules">I tidsutmaningen har du 10 sekunder på dig att nå poängkravet på varje nivå.</p>
     </section>
     <section id="play-screen" aria-label="Spelplan" hidden>
       <div class="round">
         <div><span id="distance">Avstånd 1 av 2</span> <strong id="level">Nivå 1</strong> <span id="challenge"></span></div>
-        <span id="shots">5 skott kvar</span>
+        <div class="round-limits">
+          <span id="shots">5 skott kvar</span>
+          <div id="round-clock" role="timer" aria-label="Tid kvar" hidden>10,0 s</div>
+        </div>
       </div>
       <div id="rink" class="rink">
         <div class="stands"></div>

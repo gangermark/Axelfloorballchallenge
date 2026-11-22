@@ -11,6 +11,7 @@ const scoreLabel = document.querySelector('#score-label');
 const levelDisplay = document.querySelector('#level');
 const challenge = document.querySelector('#challenge');
 const shotsDisplay = document.querySelector('#shots');
+const roundClock = document.querySelector('#round-clock');
 const advance = document.querySelector('#advance');
 const startScreen = document.querySelector('#start-screen');
 const playScreen = document.querySelector('#play-screen');
@@ -28,6 +29,7 @@ const levels = [
   { target: 15, width: 20, height: 27, hint: 'Utan siktpunkt', keeper: true, hard: true }
 ];
 const shotsPerLevel = 5;
+const roundTime = 10_000;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
 let distance = 0;
@@ -37,6 +39,9 @@ let shots = 0;
 let drag = null;
 let flight = null;
 let advanceTimer;
+let timedMode = false;
+let deadline = null;
+let clockInterval;
 let keyboardAim = { direction: 0, power: 0.54 };
 
 function updateScoreboard() {
@@ -50,8 +55,34 @@ function placeBall() {
   keyboardAim = { direction: 0, power: 0.54 };
 }
 
+function stopClock() {
+  clearInterval(clockInterval);
+  deadline = null;
+}
+
+// Tiden räknas från en sluttid, så den blir rätt även om fliken varit i bakgrunden.
+function updateClock() {
+  if (deadline === null) return true;
+  const remaining = Math.max(0, deadline - performance.now());
+  const seconds = (Math.ceil(remaining / 100) / 10).toFixed(1).replace('.', ',');
+  roundClock.textContent = `${seconds} s`;
+  roundClock.classList.toggle('low-time', remaining <= 3_000);
+  if (remaining > 0) return true;
+
+  stopClock();
+  clearDrag();
+  flight?.cancel();
+  flight = null;
+  ball.disabled = true;
+  result.textContent = 'Tiden är slut! Försök igen.';
+  advance.textContent = 'Försök igen';
+  advance.hidden = false;
+  return false;
+}
+
 function startRound(newLevel) {
   clearTimeout(advanceTimer);
+  stopClock();
   clearDrag();
   flight?.cancel();
   flight = null;
@@ -74,6 +105,13 @@ function startRound(newLevel) {
   ball.disabled = false;
   placeBall();
   updateScoreboard();
+
+  roundClock.hidden = !timedMode;
+  if (timedMode) {
+    deadline = performance.now() + roundTime;
+    updateClock();
+    clockInterval = setInterval(updateClock, 50);
+  }
 }
 
 function goalOpening() {
@@ -157,6 +195,7 @@ function keeperStops(x, y) {
 }
 
 async function shoot({ x, y, power, offsetX = 0, offsetY = 0 }) {
+  if (!updateClock()) return;
   const points = pointsAt(x, y);
   const overBar = y < goalOpening().top;
   clearDrag();
@@ -180,6 +219,7 @@ async function shoot({ x, y, power, offsetX = 0, offsetY = 0 }) {
   }
 
   flight = null;
+  if (!updateClock()) return;
   const saved = points > 0 && keeperStops(x, y);
   const earned = saved ? 0 : points;
   score += earned;
@@ -198,6 +238,7 @@ async function shoot({ x, y, power, offsetX = 0, offsetY = 0 }) {
     return;
   }
 
+  stopClock();
   ball.disabled = true;
   const distanceCleared = passed && level === levels.length - 1;
   const won = distanceCleared && distance === distances.length - 1;
@@ -290,16 +331,21 @@ function startChallenge() {
   ball.focus();
 }
 
-document.querySelector('#reset').addEventListener('click', startChallenge);
-document.querySelector('#start').addEventListener('click', () => {
+function openGame(withTimer) {
+  timedMode = withTimer;
   startScreen.hidden = true;
   playScreen.hidden = false;
   scoreboard.hidden = false;
   startChallenge();
-});
+}
+
+document.querySelector('#reset').addEventListener('click', startChallenge);
+document.querySelector('#start').addEventListener('click', () => openGame(false));
+document.querySelector('#start-timed').addEventListener('click', () => openGame(true));
 
 document.querySelector('#home').addEventListener('click', () => {
   clearTimeout(advanceTimer);
+  stopClock();
   clearDrag();
   flight?.cancel();
   flight = null;
