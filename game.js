@@ -29,7 +29,7 @@ const levels = [
   { target: 15, width: 20, height: 27, hint: 'Utan siktpunkt', keeper: true, hard: true }
 ];
 const shotsPerLevel = 5;
-const roundTime = 30_000;
+const roundTime = 15_000;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
 let distance = 0;
